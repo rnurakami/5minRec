@@ -1,0 +1,235 @@
+<!doctype html>
+
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <title>Ruby勉強会　Rspecについて</title>
+    <meta name="description" content="Rspec whith Ruby on Rails">
+    <meta name="author" content="rnurakami" />
+
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress-demo.css" rel="stylesheet" />
+
+</head>
+<body>
+
+
+<div id="impress" class="impress-not-supported">
+
+    
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+
+    <div id="hyoshi" class="step test" data-x="2800" data-y="2000" data-z="0" data-scale="3">
+       <p>５分間レクチャー</p>
+       <h1>RSpec</h1>
+       <p>と<strong>Test::Unit</strong>の違いは</p>
+    </div>
+
+    <div id="abst" class="step test" data-x="0" data-y="0" data-z="0" data-scale="">
+       <p><strong>RSpecとは</strong></p>
+       <span class="toha">「プログラムの振舞 (behaviour)」を記述するためのドメイン特化言語(<abbr title="Domain Specific Language">DSL</abbr>)を提供するフレームワーク」です。</span>
+       <p><span class="rspecinfo"><a href="http://rspec.info/">公式サイト</a>より</span></p>
+    </div>
+
+    <div id="" class="step test" data-x="0" data-y="0" data-z="-2000" data-rotate="-90" data-scale="">
+       <p>振る舞い</p>
+       <p>あるArrayインスタンスが空の場合に期待する振舞</p>
+       <pre><code>
+        arr = []
+        arr.empty? #=> 振舞として true を返すことを期待する
+        arr.size   #=> 振舞として 0 を返すことを期待する
+       </code></pre>
+    </div>
+
+    <div id="" class="step test" data-x="0" data-y="0" data-z="-3000" data-rotate="-180" data-scale="">
+       <p>Test::Unit</p>
+       <pre>
+       <code>
+       require 'test/unit'
+
+       class ArrayTest < Test::Unit::TestCase
+         def setup
+           @empty_array = []
+         end
+
+         def test_empty?
+           assert(@empty_array.empty?)
+         end
+
+         def test_size
+           assert_equal(0, @empty_array.size)
+         end
+
+         def teardown
+           @empty_array = nil
+         end
+       end
+      </code>
+      </pre>
+    </div>
+
+
+    <div id="" class="step test" data-x="2000" data-y="0" data-scale="">
+       <p>RSpec</p>
+       <pre><code>
+         describe Array, "when empty" do
+           before do
+             @empty_array = []
+           end
+
+           it "should be empty" do
+             @empty_array.should be_empty
+           end
+
+           it "should size 0" do
+             @empty_array.size.should == 0
+           end
+
+           after do
+             @empty_array = nil
+           end
+         end
+       </code></pre>
+    </div>
+
+    <div id="" class="step test" data-x="4000" data-y="0" data-rotate="180" data-scale="2">
+       <p>RSpecって、要はTest::Unitでやっていることを別の書き方にしただけでは？</p>
+    </div>
+
+    <div id="" class="step test" data-x="4000" data-y="0" data-z="2500" data-rotate="" data-scale="2">
+       <h1>なぜ、RSpecなのか？</h1>
+    </div>
+
+    <div id="impor" class="step test" data-x="0" data-y="2000" data-rotate="-90" data-rotate-x="" data-rotate-y="20" data-scale="3">
+       <h1>「書き方」重要</h1>
+       <p>xUnitでは基本的にテストメソッドは全てフラットに定義される</p>
+       <p>RSpec で構造化されたテストコードを書ける！（describeを使って同じレベルで並べたりネストさせたりする！）</p>
+    </div>
+
+    <div id="" class="step test" data-x="0" data-y="4000" data-rotate="" data-rotate-x="" data-rotate-y="20" data-scale="">
+       <p>xUnitっぽい書き方</p>
+       <pre><code>
+       describe Stack do
+         before do
+           @stack = Stack.new
+         end
+   
+         it '#pushの返り値はpushした値であること' do
+           // shoud be ...
+         end
+
+         it 'スタックが空の場合、#popの返り値はnilであること' do
+           // shoud be ...
+         end
+  
+         it 'スタックに値がある場合、#popで最後の値を取得すること' do
+           // shoud be ...
+         end
+  
+         it '#sizeはスタックのサイズを返すこと' do
+           // shoud be ...
+         end
+       end
+       </code></pre>
+       </div>
+
+    <div id="" class="step test" data-x="1000" data-y="4000" data-rotate="" data-rotate-x="" data-rotate-y="20" data-scale="">
+       <p>RSpecらしい書き方</p>
+       <pre><code>
+       describe Stack do
+         before do
+           @stack = Stack.new
+         end
+   
+         describe '#push' do
+           it '返り値はpushした値であること' do
+              // should be...
+           end
+  
+           it 'nilをpushした場合は例外であること' do
+              // should be...
+           end
+         end
+  
+         describe '#pop' do
+           it 'スタックが空の場合、#popの返り値はnilであること' do
+              // should be...
+           end
+  
+           it 'スタックに値がある場合、#popで最後の値を取得すること' do
+              // should be...
+           end
+         end
+        
+         //...
+       end
+      </code></pre>
+    </div>
+
+    <div id="behav" class="step test" data-x="2000" data-y="4000" data-rotate="" data-rotate-x="" data-rotate-y="20" data-scale="">
+       <h1>振舞の記述</h1>
+       <p>テストケースの論理的なまとまり<strong>「振舞 (behaviour)」</strong>を記述できる。</p>
+       <p>RSpecが「振舞定義用のDSL」を提供して、プログラマにTest::Unitと異なる書き方をさせているのは。。。</p>
+    </div>
+ 
+
+    <div id="tdd" class="step test" data-x="3500" data-y="4500" data-rotate="90" data-rotate-x="" data-rotate-y="" data-scale="2">
+       <h1>TDDしたい！</h1>
+       <p>RSpecのプログラミングに対する考え方と、フレームワークとして支援するプログラミングの進め方は<strong>TDDそのもの!</strong></p>
+       <small>TDDについては、どなたかご教示を。。。</small>
+    </div>
+ 
+
+    <div id="" class="step test" data-x="6500" data-y="3500" data-z="-3000" data-rotate="180" data-rotate-x="" data-rotate-y="" data-scale="2">
+       <p>RSpecの道しるべ</p>
+       <ul>
+         <li>◆<a href="http://developer.aiming-inc.com/rails/rspec-references/">RSpec を使い始める人が読むべき N 個のドキュメント</a></li>
+         <li>◆<a href="http://www.atmarkit.co.jp/fcoding/articles/reading/02/reading02a.html">SKIPもRSpecで作ったとか</a></li>
+       </ul>
+   </div>
+
+    <div id="" class="step test" data-x="6500" data-y="1500" data-z="-7000" data-rotate="180" data-rotate-x="" data-rotate-y="" data-scale="2">
+       <p>ちなみにこのスライドは</p>
+       <ul>
+         <li>◆<a href="http://github.com/bartaz/impress.js">impress.js(GitHub)</a>からもってきました</li>
+         <li>◆<a href="http://www.ideaxidea.com/archives/2012/01/impress_js_undocumented.html">使い方</a>あります。</li>
+       </ul>
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+ 
+</div>
+
+<!--
+    Hint is not related to impress.js in any way.
+    
+    But it can show you how to use impress.js features in creative way.
+    
+    When the presentation step is shown (selected) it's element get's the class of "active" and `#impress` root
+    element get's the class based on active step id `step-ID` (where ID is the step id)... It probably is not
+    so clear because of all these IDs in here, so for example when the first step (the one with id of `bored`)
+    is active, `#impress` element get a class of `step-bored`.
+    
+    This class is used by this hint below. Check CSS file to see how it's shown with delayed CSS animation.
+-->
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+
+
+<!--
+    Last, but not least.
+    
+    To make all described above really work, you need to include impress.js in the page.
+    And you should do it in the end of your document. Not only because it's a good practice, but also
+    because I was lazy, haven't wrapped the code in any kind of "DOM ready" event, so it will not work
+    if included too early in the source ;)
+-->
+<script src="js/impress.js"></script>
+
+</body>
+</html>
